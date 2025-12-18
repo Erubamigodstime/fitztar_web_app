@@ -1,6 +1,51 @@
 "use client";
 
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+
 export default function ContactUsSection() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [status, setStatus] = useState<{
+    type: "idle" | "loading" | "success" | "error";
+    message: string;
+  }>({ type: "idle", message: "" });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (status.type === "loading") return;
+
+    setStatus({ type: "loading", message: "" });
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
+
+      setStatus({ type: "success", message: "Message sent successfully!" });
+      setFormData({ name: "", email: "", message: "" });
+      setTimeout(() => setStatus({ type: "idle", message: "" }), 5000);
+    } catch (error) {
+      setStatus({ type: "error", message: error instanceof Error ? error.message : "Failed to send message" });
+    }
+  };
+
   return (
     <section
       className="relative bg-cover bg-center py-28"
@@ -81,14 +126,19 @@ export default function ContactUsSection() {
                 Fill out the form and we will get back to you promptly
               </p>
 
-              <form className="mt-6 space-y-5">
+              <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
                 <div>
                   <label className="mb-1 block text-xs text-slate-500">
                     Name
                   </label>
                   <input
                     type="text"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:border-[#7CFA6B] focus:outline-none"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    disabled={status.type === "loading"}
+                    className="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:border-[#7CFA6B] focus:outline-none disabled:opacity-50"
                   />
                 </div>
 
@@ -98,7 +148,12 @@ export default function ContactUsSection() {
                   </label>
                   <input
                     type="email"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:border-[#7CFA6B] focus:outline-none"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    disabled={status.type === "loading"}
+                    className="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:border-[#7CFA6B] focus:outline-none disabled:opacity-50"
                   />
                 </div>
 
@@ -108,17 +163,32 @@ export default function ContactUsSection() {
                   </label>
                   <textarea
                     rows={4}
-                    className="w-full resize-none rounded-lg border border-slate-200 px-4 py-3 text-sm focus:border-[#7CFA6B] focus:outline-none"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                    disabled={status.type === "loading"}
+                    className="w-full resize-none rounded-lg border border-slate-200 px-4 py-3 text-sm focus:border-[#7CFA6B] focus:outline-none disabled:opacity-50"
                   />
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex flex-col items-end gap-3">
+                  {status.message && (
+                    <p className={`text-sm ${status.type === 'error' ? 'text-red-500' : 'text-green-600'}`}>
+                      {status.message}
+                    </p>
+                  )}
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-2 rounded-full bg-[#7CFA6B] px-6 py-3 text-sm font-medium text-black"
+                    disabled={status.type === "loading"}
+                    className="inline-flex items-center gap-2 rounded-full bg-[#7CFA6B] px-6 py-3 text-sm font-medium text-black disabled:opacity-70"
                   >
-                    Send message
-                    <span>↗</span>
+                    {status.type === "loading" ? "Sending..." : "Send message"}
+                    {status.type === "loading" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <span>↗</span>
+                    )}
                   </button>
                 </div>
               </form>
