@@ -56,7 +56,7 @@ export default function AboutSection() {
 
             <p className="mt-4 text-sm leading-relaxed text-slate-500">
               Everyone wants to be consistent but sometimes life gets in the way.
-              We realized the real problem wasn't willpower but lack of
+              We realized the real problem wasn&apos;t willpower but lack of
               organization and motivation.
             </p>
 

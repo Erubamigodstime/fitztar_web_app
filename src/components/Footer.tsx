@@ -22,7 +22,7 @@ export default function Footer() {
           </p>
 
           <p className="mt-2 text-sm leading-relaxed text-white">
-            Fitness is more than just working out, it's the balance of
+            Fitness is more than just working out, it&apos;s the balance of
             movement, nutrition, habits, accountability, and consistency.
           </p>
 
