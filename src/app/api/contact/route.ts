@@ -3,7 +3,8 @@ import { Resend } from 'resend';
 import { contactFormSchema } from '@/lib/validations';
 
 // Initialize Resend with API key from environment variables
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Use a fallback to prevent build-time crashes if the env var is missing
+const resend = new Resend(process.env.RESEND_API_KEY || 're_missing_key');
 
 export async function POST(request: NextRequest) {
   try {
