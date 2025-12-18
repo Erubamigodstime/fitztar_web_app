@@ -1,7 +1,6 @@
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
-import ContactForm from '@/components/ContactUsSection';
 import Footer from '@/components/Footer';
 import WhyChooseFitztar from '@/components/WhyChooseFitztar';
 import AboutSection from '@/components/AboutSection';
